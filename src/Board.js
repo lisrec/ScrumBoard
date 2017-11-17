@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
 
 import List from './List'
 
 class Board extends Component {
+	
 	render() {
 		return (
 				<div className='app'>
@@ -11,6 +13,7 @@ class Board extends Component {
 					<List 
 						id='todo'
 						title='Do zrobienia'
+						taskCallbacks={this.props.taskCallbacks}
 						cards={
 							this.props.cards.filter(card => card.status === 'todo')
 						} />
@@ -18,6 +21,7 @@ class Board extends Component {
 					<List 
 						id='in-progress'
 						title='W trakcie'
+						taskCallbacks={this.props.taskCallbacks}
 						cards={
 							this.props.cards.filter(card => card.status === 'in-progress')
 						} />
@@ -25,6 +29,7 @@ class Board extends Component {
 					<List 
 						id='done'
 						title='Zrobione'
+						taskCallbacks={this.props.taskCallbacks}
 						cards={
 							this.props.cards.filter(card => card.status === 'done')
 						} />
@@ -32,6 +37,11 @@ class Board extends Component {
 				</div>
 			)
 	}
+}
+
+Board.propTypes = {
+	cards: PropTypes.arrayOf(PropTypes.object),
+	taskCallbacks: PropTypes.object
 }
 
 export default Board
