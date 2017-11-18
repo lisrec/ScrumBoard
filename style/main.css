@@ -88,7 +88,7 @@ ul {
 .card__description--toggle-enter.card__description--toggle-enter-active {
 	max-height: 300px;
 	overflow: hidden;
-	transition: max-height .3 ease-in;
+	transition: max-height .3s ease-in;
 	-webkit-transition: max-height .3s ease-in;
 	-moz-transition: max-height .3s ease-in;
 	-o-transition: max-height .3s ease-in;
@@ -102,10 +102,10 @@ ul {
 .card__description--toggle-leave.card__description--toggle-leave-active {
 	max-height: 0px;
 	overflow: hidden;
-	transition: max-height .3 ease-out;
-	-webkit-transition: max-height .3 ease-out;
-	-moz-transition: max-height .3 ease-out;
-	-o-transition: max-height .3 ease-out;
+	transition: max-height .3s ease-out;
+	-webkit-transition: max-height .3s ease-out;
+	-moz-transition: max-height .3s ease-out;
+	-o-transition: max-height .3s ease-out;
 }
 
 .checklist__task:first-child {
