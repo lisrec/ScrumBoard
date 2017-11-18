@@ -9,11 +9,14 @@
   "author": "Lisrec",
   "license": "ISC",
   "dependencies": {
+    "immutability-helper": "^2.5.0",
     "lodash": "^4.17.4",
     "marked": "^0.3.6",
     "react": "^16.1.1",
-    "react-addons-update": "^15.6.2",
-    "react-dom": "^16.1.1"
+    "react-dnd": "^2.5.4",
+    "react-dnd-html5-backend": "^2.5.4",
+    "react-dom": "^16.1.1",
+    "react-transition-group": "^1.2.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

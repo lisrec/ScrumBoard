@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import update from 'react-addons-update'
+import update from 'immutability-helper'
 import _ from 'lodash'
 
 import Board from './Board'
@@ -29,10 +29,7 @@ class BoardContainer extends Component {
 	componentDidMount() {
 		fetch(API_URL + '/cards', {headers: API_HEADERS})
 			.then(resp => resp.json())
-			.then(cardsData => {
-				console.log(cardsData)
-				this.setState({cardsList: cardsData})
-			})
+			.then(cardsData => this.setState({cardsList: cardsData}))
 			.catch(e => console.log('Błąd połączenia z API', e))
 	}
 
