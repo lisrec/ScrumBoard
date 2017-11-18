@@ -13,7 +13,15 @@ module.exports = {
 	},
 	module: {
 		loaders: [
-			{ "test": /\.jsx?$/i, "loader": "babel-loader", "exclude": /node_modules/, "query": { "presets": ["es2015", "react"] } }
+			{ 
+				"test": /\.jsx?$/i, 
+				"loader": "babel-loader", 
+				"exclude": /node_modules/, 
+				"query": { 
+					"presets": ["es2015", "react"],
+					"plugins": ["transform-object-rest-spread"]
+				},
+			}
 		],
 	}
 }

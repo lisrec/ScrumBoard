@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
 import List from './List'
 
@@ -14,6 +16,7 @@ class Board extends Component {
 						id='todo'
 						title='Do zrobienia'
 						taskCallbacks={this.props.taskCallbacks}
+						cardCallbacks={this.props.cardCallbacks}
 						cards={
 							this.props.cards.filter(card => card.status === 'todo')
 						} />
@@ -22,6 +25,7 @@ class Board extends Component {
 						id='in-progress'
 						title='W trakcie'
 						taskCallbacks={this.props.taskCallbacks}
+						cardCallbacks={this.props.cardCallbacks}
 						cards={
 							this.props.cards.filter(card => card.status === 'in-progress')
 						} />
@@ -30,6 +34,7 @@ class Board extends Component {
 						id='done'
 						title='Zrobione'
 						taskCallbacks={this.props.taskCallbacks}
+						cardCallbacks={this.props.cardCallbacks}
 						cards={
 							this.props.cards.filter(card => card.status === 'done')
 						} />
@@ -41,7 +46,8 @@ class Board extends Component {
 
 Board.propTypes = {
 	cards: PropTypes.arrayOf(PropTypes.object),
-	taskCallbacks: PropTypes.object
+	taskCallbacks: PropTypes.object,
+	cardCallbacks: PropTypes.object
 }
 
-export default Board
+export default DragDropContext(HTML5Backend)(Board)

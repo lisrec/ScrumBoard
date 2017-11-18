@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import { DragSource, DropTarget } from 'react-dnd'
 import { CSSTransitionGroup } from 'react-transition-group'
 import marked from 'marked'
 
+import consts from './constants'
 import CheckList from './CheckList'
 
 let titlePropType = (props, propName, componentName) => {
@@ -11,6 +13,37 @@ let titlePropType = (props, propName, componentName) => {
 		let value = props[propName]
 		if (typeof value !== 'string' || value.length > 80)
 			return new Error (`Wartość ${propName} w ${componentName} nie jest typu string lub jest dłuższa niż 80 znaków.`)
+	}
+}
+
+const cardDragSpec = {
+	beginDrag(props) {
+		return {
+			id: props.id,
+			status: props.status
+		}
+	},
+	endDrag(props) {
+		props.cardCallbacks.persistCardDrag(props.id, props.status)
+	}
+}
+
+const cardDropSpec = {
+	hover(props, monitor) {
+		const draggedId = monitor.getItem().id
+		props.cardCallbacks.updatePosition(draggedId, props.id)
+	}
+}
+
+let collectDrag = (connect, monitor) => {
+	return {
+		connectDragSource: connect.dragSource()
+	}
+}
+
+let collectDrop = (connect, monitor) => {
+	return {
+		connectDropTarget: connect.dropTarget()
 	}
 }
 
@@ -31,6 +64,8 @@ class Card extends Component {
 	}
 
 	render() {
+		const { connectDragSource, connectDropTarget } = this.props
+
 		let cardDetails = (this.state.showDetails) ? (
 				<div key={this.props.id} className="card__description">
 					<span dangerouslySetInnerHTML={{__html:marked(this.props.description)}} />
@@ -48,11 +83,11 @@ class Card extends Component {
 			backgroundColor: this.props.color
 		}
 
-		return (
+		return connectDropTarget(connectDragSource(
 				<div className="card">
 					<div style={sideColor} />
 					<div 
-						className={(this.state.showDetails) ? 'card__title card__title--is-open' : 'card__title'} 
+						className={(this.state.showDetails) ? 'noselect card__title card__title--is-open' : 'noselect card__title'} 
 						onClick={this.handleToggleDetails}>
 						{this.props.title} 
 					</div>
@@ -64,7 +99,7 @@ class Card extends Component {
 						{cardDetails}
 					</CSSTransitionGroup>
 				</div>
-			)
+			))
 	}
 }
 
@@ -74,7 +109,13 @@ Card.propTypes = {
 	description: PropTypes.string,
 	color: PropTypes.string,
 	tasks: PropTypes.arrayOf(PropTypes.object),
-	taskCallbacks: PropTypes.object
+	cardCallbacks: PropTypes.object,
+	taskCallbacks: PropTypes.object,
+	connectDragSource: PropTypes.func.isRequired,
+	connectDropTarget: PropTypes.func.isRequired
 }
 
-export default Card
+const DragCard = DragSource(consts.CARD, cardDragSpec, collectDrag)(Card)
+const DragDropCard = DropTarget(consts.CARD, cardDropSpec, collectDrop)(DragCard)
+
+export default DragDropCard

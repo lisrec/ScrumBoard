@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import update from 'immutability-helper'
 import _ from 'lodash'
 
+import { throttle } from './utils'
 import Board from './Board'
 
 const API_URL = 'http://kanbanapi.pro-react.com'
@@ -20,6 +21,10 @@ class BoardContainer extends Component {
 		this.addTask = this.addTask.bind(this)
 		this.deleteTask = this.deleteTask.bind(this)
 		this.toggleTask = this.toggleTask.bind(this)
+		this.persistCardDrag = this.persistCardDrag.bind(this)
+		
+		this.updateCardStatus = throttle(this.updateCardStatus.bind(this))
+		this.updateCardPosition = throttle(this.updateCardPosition.bind(this), 2000)
 
 		this.state = {
 			cardsList: []
@@ -115,6 +120,69 @@ class BoardContainer extends Component {
 			})
 	}
 
+	updateCardStatus(cardId, listId) {
+		let cardIndex = _.findIndex(this.state.cardsList, card => card.id == cardId)
+		let card = this.state.cardsList[cardIndex]
+
+		if (card.status !== listId) {
+			let nextListState = update(this.state.cardsList, {
+				[cardIndex]: {
+					status: {
+						$set: listId
+					}
+				}
+			})
+
+			this.setState({cardsList: nextListState})
+		}
+	}
+
+	updateCardPosition (cardId, afterId) {
+		if (cardId != afterId) {
+			let cardIndex = _.findIndex(this.state.cardsList, card => card.id == cardId)
+			let afterIndex = _.findIndex(this.state.cardsList, card => card.id == afterId)
+			let card = this.state.cardsList[cardIndex]
+
+			let nextListState = update(this.state.cardsList, {
+				$splice: [
+					[cardIndex, 1],
+					[afterIndex, 0, card]
+				]
+			})
+
+			this.setState({cardsList: nextListState})
+		}
+	}
+
+	persistCardDrag (cardId, status) {
+		let cardIndex = _.findIndex(this.state.cardsList, card => card.id == cardId)
+		let card = this.state.cardsList[cardIndex]
+
+		fetch(`${API_URL}/cards/${cardId}`, {
+			method: 'put',
+			headers: API_HEADERS,
+			body: JSON.stringify({status: card.status, row_order_position: cardIndex})
+		})
+			.then(resp => {
+				if (!resp.ok)
+					throw new Error("Blad servera.")
+			})
+			.catch(e => {
+				console.log(e)
+				this.setState(
+					update(this.state, {
+						cards: {
+							[cardIndex]: {
+								status: {
+									$set: status
+								}
+							}
+						}
+					})
+				)
+			})
+	}
+
 	render() {
 		return (
 			<Board cards={this.state.cardsList} 
@@ -122,6 +190,11 @@ class BoardContainer extends Component {
 					add: this.addTask,
 					delete: this.deleteTask,
 					toggle: this.toggleTask
+				}}
+				cardCallbacks={{
+					updateStatus: this.updateCardStatus,
+					updatePosition: this.updateCardPosition,
+					persistCardDrag: this.persistCardDrag
 				}}/>
 		)
 	}

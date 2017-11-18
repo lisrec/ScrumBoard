@@ -14,15 +14,27 @@ body {
 }
 
 h1 {
-	font-weight: 200;
+	font-weight: 400;
 	color: #3b414c;
-	font-size: 20px;
+	font-size: 22px;
+	text-align: center;
+	padding-bottom: 5px;
+	border-bottom: 2px solid rgba(120,120,120, 0.4);
 }
 
 ul {
 	list-style-type: none;
 	padding: 0;
 	margin: 0;
+}
+
+.noselect {
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE / Edge */
+	user-select: none; /* Chrome / Opera */
 }
 
 .app {
@@ -66,8 +78,12 @@ ul {
 
 .card__title {
 	width: 100%;
+	padding: 5px 0px;
 	font-weight: bold;
-	border-bottom: solid 5px transparent;
+}
+
+.card__title:hover {
+	background-color: rgba(180, 180, 180, 0.1);
 }
 
 .card__title:before {
