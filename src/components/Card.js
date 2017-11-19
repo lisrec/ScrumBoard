@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { DragSource, DropTarget } from 'react-dnd'
 import { CSSTransitionGroup } from 'react-transition-group'
+import { Link } from 'react-router-dom'
 import marked from 'marked'
 
-import consts from './constants'
+import consts from '../utils/constants'
 import CheckList from './CheckList'
 
 let titlePropType = (props, propName, componentName) => {
@@ -55,7 +56,7 @@ class Card extends Component {
 		this.handleToggleDetails = this.handleToggleDetails.bind(this)
 
 		this.state = {
-			showDetails: true
+			showDetails: false
 		}
 	}
 
@@ -86,6 +87,7 @@ class Card extends Component {
 		return connectDropTarget(connectDragSource(
 				<div className="card">
 					<div style={sideColor} />
+					<div className="card__edit"><Link to={`/edit/${this.props.id}`}> &#9998; </Link></div>
 					<div 
 						className={(this.state.showDetails) ? 'noselect card__title card__title--is-open' : 'noselect card__title'} 
 						onClick={this.handleToggleDetails}>

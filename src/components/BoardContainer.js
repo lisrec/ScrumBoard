@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import update from 'immutability-helper'
 import _ from 'lodash'
 
-import { throttle } from './utils'
+import { throttle } from '../utils/utils'
 import Board from './Board'
 
 const API_URL = 'http://kanbanapi.pro-react.com'
@@ -18,6 +18,8 @@ class BoardContainer extends Component {
 	constructor(props) {
 		super(props)
 
+		this.addCard = this.addCard.bind(this)
+		this.updateCard = this.updateCard.bind(this)
 		this.addTask = this.addTask.bind(this)
 		this.deleteTask = this.deleteTask.bind(this)
 		this.toggleTask = this.toggleTask.bind(this)
@@ -36,6 +38,56 @@ class BoardContainer extends Component {
 			.then(resp => resp.json())
 			.then(cardsData => this.setState({cardsList: cardsData}))
 			.catch(e => console.log('Błąd połączenia z API', e))
+	}
+
+	addCard(card) {
+		let prevState = this.state
+		
+		if (card.id == null)
+			card = Object.assign({}, card, {id: Date.now()})
+
+		let nextListState = update(this.state.cardsList, {
+			$push: [card]
+		})
+
+		this.setState({cardsList: nextListState})
+
+		fetch(`${API_URL}/cards`, {
+			method: 'post',
+			headers: API_HEADERS,
+			body: JSON.stringify(card)
+		})
+			.then(resp => (resp.ok) ? resp.json() : new Error("Nieprawidłowa odpowiedz serwera."))
+			.then(respCard => {
+				card.id = respCard.id
+				this.setState({cardsList: nextListState})
+			})
+			.catch(err => {
+				this.setState(prevState)
+			})
+	}
+
+	updateCard(card) {
+		let prevState = this.state
+		let cardIndex = _.findIndex(this.state.cardsList, c => c.id == card.id)
+
+		let nextListState = update(this.state.cardsList, {
+			[cardIndex]: {
+				$set: card
+			}
+		})
+
+		this.setState({cardsList: nextListState})
+
+		fetch(`${API_URL}/cards/${card.id}`, {
+			method: 'put',
+			headers: API_HEADERS,
+			body: JSON.stringify(card)
+		})
+			.then(resp => (resp.ok) ? resp.json() : new Error("Nieprawidłowa odpowiedz serwera."))
+			.catch(err => {
+				this.setState(prevState)
+			})
 	}
 
 	addTask(cardId, taskName) {
@@ -192,6 +244,8 @@ class BoardContainer extends Component {
 					toggle: this.toggleTask
 				}}
 				cardCallbacks={{
+					addCard: this.addCard,
+					updateCard: this.updateCard,
 					updateStatus: this.updateCardStatus,
 					updatePosition: this.updateCardPosition,
 					persistCardDrag: this.persistCardDrag

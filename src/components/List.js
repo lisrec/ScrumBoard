@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { DropTarget } from 'react-dnd'
-import consts from './constants'
+import consts from '../utils/constants'
 
 import Card from './Card'
 
